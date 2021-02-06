@@ -1,10 +1,7 @@
 import { Server } from "http";
+import { setupListeners as setupSocketIO } from "./listeners";
 const server: Server = require('http').createServer();
-const io: SocketIO.Server = require('socket.io')(server);
 
-io.on('connection', client => {
-  client.on('event', data => { /* … */ });
-  client.on('disconnect', () => { /* … */ });
-});
+setupSocketIO(server);
 
 server.listen(3000);
