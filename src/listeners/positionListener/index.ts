@@ -10,8 +10,8 @@ export const setup = (client: SocketIO.Socket) => {
     client.emit("last-position", value);
   })
 
-  client.on("set-position", ({coordinates, driverId}) => {
-    redisClient.set(`driver-${driverId}`, coordinates)
+  client.on("set-position", (coordinates) => {
+    redisClient.set(`driver-${client.id}`, coordinates)
   });
 
   client.on("get-position", (driverId) => {
