@@ -1,21 +1,23 @@
-import redisClient from '../../persistence'
-import { onKeyChange } from '../util/redisSubscribe';
+import redisClient from "../../persistence";
+import { addSubscriber } from "../util/redisNotifier";
 
 export const setup = (client: SocketIO.Socket) => {
-  
-  const driverId = 1;
+  client.on("subscribe-to-driver", (driverId) => {
+    const subscriber = {
+      userId: "1", // Users own Id. Will be used to unsubscribe later.
+      onChange: (value: any) => {
+        client.emit("last-position", value);
+      },
+    };
+    addSubscriber(`driver-${driverId}`, subscriber);
+  });
 
-  onKeyChange(`driver-${driverId}`, (key, value) => {
-    console.log(`Key ${key} was changed`);
-    client.emit("last-position", value);
-  })
-
-  client.on("set-position", (coordinates) => {
-    redisClient.set(`driver-${client.id}`, coordinates)
+  client.on("set-position", ({ coordinates, driverId }) => {
+    redisClient.set(`driver-${driverId}`, coordinates);
   });
 
   client.on("get-position", (driverId) => {
-    const lastPosition = redisClient.get(`driver-${driverId}`)
+    const lastPosition = redisClient.get(`driver-${driverId}`);
     client.emit("last-position", lastPosition);
   });
 };
