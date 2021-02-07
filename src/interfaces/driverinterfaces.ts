@@ -4,6 +4,6 @@ export interface IDriverAuth {
 }
 
 export interface ICoordinateData {
-    coordinate: number[];
+    coordinate: [number, number];
     userid: string;
 }

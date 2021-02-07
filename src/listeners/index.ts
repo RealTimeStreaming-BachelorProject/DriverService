@@ -2,7 +2,7 @@ import { Server, Socket } from "socket.io";
 import { DRIVER_AUTH } from "../events";
 import { IDriverAuth } from "../interfaces/driverinterfaces";
 import { DRIVER_NAMESPACE, USER_NAMESPACE } from "../routes";
-import { driverListeners } from "./listeners";
+import { driverListeners, userListeners } from "./listeners";
 
 export const configureIOServer = (io: Server) => {
   io.of(DRIVER_NAMESPACE).on("connection", (socket: Socket) => {
@@ -23,6 +23,9 @@ export const configureIOServer = (io: Server) => {
 
   io.of(USER_NAMESPACE).on("connection", (socket: Socket) => {
     console.log(`User ${socket.id} connected`);
+    for (const listener of userListeners) {
+      listener(socket);
+    }
   });
 };
 
