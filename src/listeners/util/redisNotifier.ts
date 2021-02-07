@@ -7,7 +7,7 @@ export interface Subscriber {
 }
 
 export interface Subscribers {
-  [key: string]: [Subscriber];
+  [key: string]: Subscriber[];
 }
 
 const subscribers: Subscribers = {};
@@ -19,7 +19,6 @@ export const startListening = () => {
   subClient.config("set", "notify-keyspace-events", "KEA");
   subClient.subscribe("__keyevent@0__:set");
   subClient.on("message", (channel, key) => {
-      console.log(subscribers)
     readClient.get(key, (error, value) => {
       if (error) {
         // Handle read error
@@ -45,6 +44,11 @@ export const addSubscriber = (key: string, subscriber: Subscriber) => {
   }
 };
 
-export const removeSubscriber = (key: string, subscriber: Subscriber) => {
-  // TODO
+/**
+ * Takes a userId and removes ALL subscriptions from that user
+ */
+export const removeSubscriber = (userId: string) => {
+  Object.keys(subscribers).forEach((key) => {
+    subscribers[key] = subscribers[key].filter((sub) => sub.userId !== userId);
+  });
 };
