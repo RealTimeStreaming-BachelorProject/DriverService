@@ -1,10 +1,31 @@
-import { Server } from "http";
-import { setup as positionSetup } from "./positionListener/";
-import { setup as connectionSetup } from "./connectionListener/";
+import { Server, Socket } from "socket.io";
+import { DRIVER_AUTH } from "../events";
+import { IDriverAuth } from "../interfaces/driverinterfaces";
+import { DRIVER_NAMESPACE, USER_NAMESPACE } from "../routes";
+import { driverListeners } from "./listeners";
 
-export const setupListeners = (server: Server) => {
-  const io: SocketIO.Server = require("socket.io")(server, {
-    cors: { origin: "*" },
+export const configureIOServer = (io: Server) => {
+  io.of(DRIVER_NAMESPACE).on("connection", (socket: Socket) => {
+    console.log(`Driver ${socket.id} connected`);
+
+    socket.on(DRIVER_AUTH, (authdata: IDriverAuth) => {
+      if (jwtIsInvalid(authdata.jwt)) {
+        socket.disconnect();
+      } else {
+        console.log("Driver authenticated");
+        
+        for (const listener of driverListeners) {
+          listener(socket);
+        }
+      }
+    });
   });
-  connectionSetup(io, [positionSetup]);
+
+  io.of(USER_NAMESPACE).on("connection", (socket: Socket) => {
+    console.log(`User ${socket.id} connected`);
+  });
 };
+
+function jwtIsInvalid(jwt: string) {
+  return jwt !== "gibberishUntilProperlyImplemented";
+}
