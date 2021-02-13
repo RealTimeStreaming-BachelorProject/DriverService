@@ -18,7 +18,7 @@ export const startListening = () => {
 
   subClient.config("set", "notify-keyspace-events", "KEA");
   subClient.subscribe("__keyevent@0__:set");
-  subClient.on("message", (channel, key) => {
+  subClient.on("message", (_, key) => {
     readClient.get(key, (error, value) => {
       if (error) {
         // Handle read error

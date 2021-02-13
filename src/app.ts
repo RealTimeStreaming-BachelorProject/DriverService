@@ -7,7 +7,7 @@ const io = require("socket.io")(server, {
     methods: ["GET", "PUT"],
   },
 });
-const cors = require("cors");
+import cors from "cors";
 import { configureIOServer } from "./listeners";
 import * as RedisNotifier from "./listeners/util/redisNotifier";
 import { getHealthCheck } from "./util/healthCheck";
@@ -15,7 +15,7 @@ const PORT = 5001;
 
 /* Express Routes */
 app.use(cors());
-app.get("/health", (req, res) => {
+app.get("/health", (_, res) => {
   res.json(getHealthCheck(io));
 });
 

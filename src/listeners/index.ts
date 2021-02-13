@@ -6,7 +6,6 @@ import { IDecodedJWT } from "../interfaces/authentication.interfaces";
 import { IDriverInitData } from "../interfaces/driver.interfaces";
 import { DRIVER_NAMESPACE, USER_NAMESPACE } from "../routes";
 import { driverListeners, userListeners } from "./listeners";
-import { removeSubscriber } from "./util/redisNotifier";
 
 export const configureIOServer = (io: Server) => {
   io.of(DRIVER_NAMESPACE).on("connection", (socket: Socket) => {
