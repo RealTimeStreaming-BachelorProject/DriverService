@@ -2,7 +2,7 @@ import { verify } from "jsonwebtoken";
 import { IDecodedJWT } from "../interfaces/authentication.interfaces";
 import connections from "./connections";
 
-const JWT_KEY: string = process.env.JWT_KEY ?? "developmentjwtkey";
+const JWT_KEY: string = process.env["JWT_KEY"] ?? "developmentjwtkey";
 
 export function jwtDecoded(token: string): IDecodedJWT | null {
   let decodedJWT: IDecodedJWT | null = null;

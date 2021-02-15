@@ -7,3 +7,23 @@ services:
     restart: always
     ports:
       - 6379:6379
+  driverservice:
+    image: omvk97/bachelordriverservice
+    container_name: driverservice
+    environment:
+      EXPRESS_PORT: 5001
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - 5001:5001
+    depends_on:
+      - redis
+  performance_monitoring:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - "./prometheus-data:/prometheus-data"
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+    

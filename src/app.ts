@@ -1,17 +1,20 @@
 import express from "express";
-const app = express();
-const server = require("http").createServer(app);
-const io = require("socket.io")(server, {
+import { Server } from "socket.io";
+import cors from "cors";
+import { configureIOServer } from "./listeners";
+import * as RedisNotifier from "./listeners/util/redisNotifier";
+import { getHealthCheck } from "./util/healthCheck";
+import logger from "./util/logger";
+
+const PORT = process.env["EXPRESS_PORT"] ?? 5001;
+
+const io = new Server({
   cors: {
     origin: "*",
     methods: ["GET", "PUT"],
   },
 });
-import cors from "cors";
-import { configureIOServer } from "./listeners";
-import * as RedisNotifier from "./listeners/util/redisNotifier";
-import { getHealthCheck } from "./util/healthCheck";
-const PORT = 5001;
+const app = express();
 
 /* Express Routes */
 app.use(cors());
@@ -22,4 +25,6 @@ app.get("/health", (_, res) => {
 RedisNotifier.startListening();
 configureIOServer(io);
 
-server.listen(PORT);
+app.listen(PORT, () => {
+  logger.info("🚀 Express server started");
+});
