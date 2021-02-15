@@ -3,6 +3,7 @@ import { dataToBytes } from "../helpers/metrichelpers";
 import PrometheusMetrics from "./prometheusMetrics";
 import { collectDefaultMetrics, register } from "prom-client";
 import { DRIVER_NAMESPACE, USER_NAMESPACE } from "../routes";
+import { PING, LATENCY_RESULT } from "../events";
 
 export default class SocketIoCollector {
   io: ioServer;
@@ -29,33 +30,34 @@ export default class SocketIoCollector {
 
   collectSocketMetrics(): void {
     // For every connection to the server collecting the following metrics from the connection
-    this.io.of(DRIVER_NAMESPACE, (socket: Socket) => {
+    this.io.of(DRIVER_NAMESPACE).on("connection", (socket: Socket) => {
       this.collectConcurrentDriverConnections(socket);
       this.collectTotalSendMessagesFromSocket(socket);
       this.collectTotalReceivedMessages(socket);
+      this.collectResponseTime(socket);
     });
-    this.io.of(USER_NAMESPACE, (socket: Socket) => {
+    this.io.of(USER_NAMESPACE).on("connection", (socket: Socket) => {
       this.collectConcurrentUserConnections(socket);
       this.collectTotalSendMessagesFromSocket(socket);
       this.collectTotalReceivedMessages(socket);
     });
   }
 
-  collectConcurrentDriverConnections(socket: Socket): void {
+  collectConcurrentDriverConnections(socket: Socket) {
     socket.on("disconnect", () => {
       this.metrics.concurrentDriverConnections.dec();
     });
     this.metrics.concurrentDriverConnections.inc();
   }
 
-  collectConcurrentUserConnections(socket: Socket): void {
+  collectConcurrentUserConnections(socket: Socket) {
     socket.on("disconnect", () => {
       this.metrics.concurrentUserConnections.dec();
     });
     this.metrics.concurrentUserConnections.inc();
   }
 
-  collectTotalSendMessagesFromSocket(socket: Socket): void {
+  collectTotalSendMessagesFromSocket(socket: Socket) {
     const orginalEmit = socket.emit;
     socket.emit = (event: string, ...args: any[]): boolean => {
       this.metrics.totalSendEvents.inc();
@@ -64,12 +66,22 @@ export default class SocketIoCollector {
     };
   }
 
-  collectTotalReceivedMessages(socket: Socket): void {
+  collectTotalReceivedMessages(socket: Socket) {
     socket.onAny((...args: any[]) => {
       const [message] = args;
 
       this.metrics.totalReceivedEvents.inc();
       this.metrics.totalReceivedBytes.inc(dataToBytes(message));
+    });
+  }
+
+  collectResponseTime(socket: Socket) {
+    socket.on(PING, (cb) => {
+      // The callback (cb) is merely an ackowledgement. If you want to see the contents of the function call cb.toString() in a console
+      if (typeof cb === "function") cb();
+    });
+    socket.on(LATENCY_RESULT, (latency: number) => {
+      this.metrics.latency.observe(latency);
     });
   }
 

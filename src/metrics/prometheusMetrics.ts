@@ -1,4 +1,4 @@
-import { Counter, Gauge } from "prom-client";
+import { Counter, Gauge, Histogram } from "prom-client";
 
 export default class PrometheusMetrics {
   concurrentDriverConnections = new Gauge({
@@ -30,4 +30,9 @@ export default class PrometheusMetrics {
     name: "socket_io_total_received_bytes",
     help: "The total number of bytes received from connected clients",
   });
+
+  latency = new Histogram({
+    name: "socket_io_latency",
+    help: "Latency"
+  })
 }

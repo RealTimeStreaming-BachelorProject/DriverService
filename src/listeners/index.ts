@@ -1,36 +1,31 @@
 import { Server, Socket } from "socket.io";
 import logger from "../util/logger";
-import { DRIVER_INIT } from "../events";
 import connections from "../helpers/connections";
 import { jwtDecoded } from "../helpers/jwt.helpers";
 import { IDecodedJWT } from "../interfaces/authentication.interfaces";
-import { IDriverInitData } from "../interfaces/driver.interfaces";
 import { DRIVER_NAMESPACE, USER_NAMESPACE } from "../routes";
 import { driverListeners, userListeners } from "./listeners";
 
 export const configureIOServer = (io: Server) => {
-  io.of(DRIVER_NAMESPACE).on("connection", (socket: Socket) => {
-    console.log(`Driver ${socket.id} connected`);
+  // note: middleware is only executed once per connection
+  // only drivers need to authorize
+  io.of(DRIVER_NAMESPACE).use((socket: Socket, next: any) => {
+    try {
+      const token: string = socket.handshake.auth.token;
+      const decodedjwt: IDecodedJWT = jwtDecoded(token);
+      connections.set(socket.id, decodedjwt.driverID);
+      next();
+    } catch (error) {
+      // All middlewares will be stopped if next is called with an error
+      next(error);
+    }
+  });
 
-    socket.on(DRIVER_INIT, (driverInitData: IDriverInitData) => {
-      try {
-        const decodedjwt: IDecodedJWT | null = jwtDecoded(driverInitData.jwt);
-        if (decodedjwt !== null) {
-          connections.set(socket.id, decodedjwt.driverID);
-          // Pass the authenticated driver socket to all relevant listernes
-          for (const listener of driverListeners) {
-            listener(socket);
-          }
-        } else {
-          logger.error("json web token not verified");
-        }
-      } catch (error) {
-        // If the sender hasn't sent a proper JWT they are disconnected
-        // This is easily exploited by DDOS attacks, this could be improved in the future by blacklisting
-        console.log(`Driver ${socket.id} disconnected`);
-        socket.disconnect();
-      }
-    });
+  io.of(DRIVER_NAMESPACE).on("connection", (socket: Socket) => {
+    logger.info(`Driver ${socket.id} connected`);
+    for (const listener of driverListeners) {
+      listener(socket);
+    }
   });
 
   // TODO: Figure out what to do upon the event of driver disconnecting. Clean up packages in redis? Clean up all their subsribers? Something something

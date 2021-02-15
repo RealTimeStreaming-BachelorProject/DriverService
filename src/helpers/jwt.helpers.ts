@@ -4,17 +4,18 @@ import connections from "./connections";
 
 const JWT_KEY: string = process.env["JWT_KEY"] ?? "developmentjwtkey";
 
-export function jwtDecoded(token: string): IDecodedJWT | null {
+export function jwtDecoded(token: string): IDecodedJWT {
   let decodedJWT: IDecodedJWT | null = null;
   verify(token, JWT_KEY, (err, decoded) => {
     if (err) {
-      throw err;
+      throw new Error("Invalid token");
     }
     if (decoded !== undefined) {
       decodedJWT = decoded as IDecodedJWT;
     }
   });
-  return decodedJWT;
+  if (decodedJWT !== null) return decodedJWT;
+  else throw new Error("Invalid token");
 }
 
 export function findDriverID(clientSocketID: string): string {

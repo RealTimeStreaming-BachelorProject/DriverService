@@ -7,6 +7,7 @@ import { getHealthCheck } from "./util/healthCheck";
 import logger from "./util/logger";
 import { createServer } from "http";
 import socketIoMetricsCollector from "./metrics/socketioCollector";
+import { listenForShutdownSignals } from "./helpers/shutdown";
 
 /* IO Server */
 const ioServer = createServer();
@@ -21,9 +22,7 @@ const SOCKETIO_PORT = process.env["SOCKETIO_PORT"] ?? 5002;
 
 RedisNotifier.startListening();
 configureIOServer(io);
-ioServer.listen(SOCKETIO_PORT, () => {
-  logger.info("🚀 Socket IO server started");
-});
+
 const socketIoCollector = new socketIoMetricsCollector(io, true);
 
 /* Express */
@@ -39,6 +38,17 @@ app.get("/metrics", async (_, res) => {
   res.send(await socketIoCollector.getMetrics());
 });
 
-app.listen(EXPRESS_PORT, () => {
+ioServer.listen(SOCKETIO_PORT, () => {
+  logger.info("🚀 Socket IO server started");
+});
+
+const expressServer = app.listen(EXPRESS_PORT, () => {
   logger.info("🚀 Express server started");
 });
+
+listenForShutdownSignals(io, expressServer);
+
+
+
+
+
