@@ -1,10 +1,10 @@
 import { ICoordinateData } from "../../../interfaces/driver.interfaces";
-import { createRedisClient } from "../../../persistence";
+import { createRedisClient, RedisDB } from "../../../persistence";
 import { promisify } from "util";
 
 
-const redisCoordinateClient = createRedisClient(0);
-const redisPackagesClient = createRedisClient(1);
+const redisCoordinateClient = createRedisClient(RedisDB.Coordinates);
+const redisPackagesClient = createRedisClient(RedisDB.Packages);
 const getPackageAsync = promisify(redisPackagesClient.get).bind(redisPackagesClient);
 
 export const saveCoordinates = (coordinateData: ICoordinateData) => {

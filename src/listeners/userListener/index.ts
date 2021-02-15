@@ -1,7 +1,7 @@
 import { Socket } from "socket.io";
 import { LATEST_COORDINATES, SUBSCRIBE_TO_DRIVER } from "../../events";
 import { retrieveDriverID } from "../coordinateListener/util/redis";
-import { addSubscriber, removeSubscriber } from "../util/redisNotifier";
+import { addSubscriber, removeSubscriber } from "../../persistence/redisNotifier";
 
 export const setupUserListeners = (clientSocket: Socket) => {
   clientSocket.on(SUBSCRIBE_TO_DRIVER, async (packageID: string) => {

@@ -1,5 +1,5 @@
 import { RedisClient } from "redis";
-const redis = require("redis");
+import { createRedisClient, RedisDB } from ".";
 
 export interface Subscriber {
   userId: string;
@@ -13,8 +13,8 @@ export interface Subscribers {
 const subscribers: Subscribers = {};
 
 export const startListening = () => {
-  const readClient: RedisClient = redis.createClient();
-  const subClient: RedisClient = redis.createClient();
+  const readClient: RedisClient = createRedisClient(RedisDB.Coordinates);
+  const subClient: RedisClient = createRedisClient(RedisDB.Coordinates);
 
   subClient.config("set", "notify-keyspace-events", "KEA");
   subClient.subscribe("__keyevent@0__:set");

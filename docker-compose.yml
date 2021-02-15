@@ -12,10 +12,12 @@ services:
     container_name: driverservice
     environment:
       EXPRESS_PORT: 5001
+      SOCKETIO_PORT: 5002
       REDIS_HOST: redis
       REDIS_PORT: 6379
     ports:
       - 5001:5001
+      - 5002:5002
     depends_on:
       - redis
   performance_monitoring:

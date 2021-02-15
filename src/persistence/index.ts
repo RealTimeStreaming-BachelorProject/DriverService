@@ -3,11 +3,11 @@ import redis from "redis";
 import logger from "../util/logger";
 
 export const createRedisClient = (db: number | string): RedisClient => {
-  const client: RedisClient = redis.createClient({
-    host: process.env["REDIS_HOST"] ?? "127.0.0.1",
-    port: process.env["REDIS_PORT"]
-      ? parseInt(process.env["REDIS_PORT"])
-      : 6379,
+  const port = process.env["REDIS_PORT"]
+    ? parseInt(process.env["REDIS_PORT"])
+    : 6379;
+  const host = process.env["REDIS_HOST"] ?? "127.0.0.1";
+  const client: RedisClient = redis.createClient(port, host, {
     db: db,
   });
   client.on("error", function (error) {
@@ -15,3 +15,8 @@ export const createRedisClient = (db: number | string): RedisClient => {
   });
   return client;
 };
+
+export enum RedisDB {
+  Coordinates = 0,
+  Packages = 1
+}
