@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import logger from "src/util/logger";
+import logger from "../util/logger";
 import { DRIVER_INIT } from "../events";
 import connections from "../helpers/connections";
 import { jwtDecoded } from "../helpers/jwt.helpers";
@@ -22,7 +22,7 @@ export const configureIOServer = (io: Server) => {
             listener(socket);
           }
         } else {
-          logger.error("json web token not verified")
+          logger.error("json web token not verified");
         }
       } catch (error) {
         // If the sender hasn't sent a proper JWT they are disconnected
