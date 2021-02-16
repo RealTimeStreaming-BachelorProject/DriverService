@@ -11,7 +11,7 @@ export const configureIOServer = (io: Server) => {
   // only drivers need to authorize
   io.of(DRIVER_NAMESPACE).use((socket: Socket, next: any) => {
     try {
-      const token: string = socket.handshake.auth.token;
+      const token: string = socket.handshake.query.token as string;
       const decodedjwt: IDecodedJWT = jwtDecoded(token);
       connections.set(socket.id, decodedjwt.driverID);
       next();
@@ -29,7 +29,6 @@ export const configureIOServer = (io: Server) => {
   });
 
   // TODO: Figure out what to do upon the event of driver disconnecting. Clean up packages in redis? Clean up all their subsribers? Something something
-
   io.of(USER_NAMESPACE).on("connection", (socket: Socket) => {
     console.log(`User ${socket.id} connected`);
     for (const listener of userListeners) {
