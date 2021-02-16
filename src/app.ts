@@ -1,5 +1,4 @@
 import express from "express";
-import { Server } from "socket.io";
 import cors from "cors";
 import { configureIOServer } from "./listeners";
 import * as RedisNotifier from "./persistence/redisNotifier";
@@ -11,11 +10,12 @@ import { listenForShutdownSignals } from "./helpers/shutdown";
 
 /* IO Server */
 const ioServer = createServer();
-const io = new Server(ioServer, {
+const io = require("socket.io")(ioServer, {
   cors: {
     origin: "*",
     methods: ["GET", "PUT"],
   },
+  pingInterval: 5000 // for metrics
 });
 
 const SOCKETIO_PORT = process.env["SOCKETIO_PORT"] ?? 5002;
@@ -47,8 +47,3 @@ const expressServer = app.listen(EXPRESS_PORT, () => {
 });
 
 listenForShutdownSignals(io, expressServer);
-
-
-
-
-

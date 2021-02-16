@@ -3,11 +3,20 @@ import { dataToBytes } from "../helpers/metrichelpers";
 import PrometheusMetrics from "./prometheusMetrics";
 import { collectDefaultMetrics, register } from "prom-client";
 import { DRIVER_NAMESPACE, USER_NAMESPACE } from "../routes";
-import { PING, LATENCY_RESULT } from "../events";
+import { LATENCY_RESULT } from "../events";
 
 export default class SocketIoCollector {
   io: ioServer;
   metrics: PrometheusMetrics;
+  // Events not to listen to
+  blacklistedEvents = new Set([
+    "error",
+    "connect",
+    "disconnect",
+    "disconnecting",
+    "newListener",
+    "removeListener",
+  ]);
 
   constructor(io: ioServer, collectDefault: boolean) {
     this.metrics = new PrometheusMetrics();
@@ -21,7 +30,7 @@ export default class SocketIoCollector {
 
   collectTotalSendEventsFromServer() {
     const orginalServerEmit = this.io.emit;
-    this.io.emit = (event: string, ...args: any[]): boolean => {
+    this.io.emit = (event: string, ...args: any[]) => {
       this.metrics.totalSendEvents.inc();
       this.metrics.totalSendBytes.inc(dataToBytes(args));
       return orginalServerEmit.apply(this.io, [event, ...args]);
@@ -59,30 +68,35 @@ export default class SocketIoCollector {
 
   collectTotalSendMessagesFromSocket(socket: Socket) {
     const orginalEmit = socket.emit;
-    socket.emit = (event: string, ...args: any[]): boolean => {
-      this.metrics.totalSendEvents.inc();
-      this.metrics.totalSendBytes.inc(dataToBytes(args));
+    socket.emit = (event: string, ...args: any[]) => {
+      if (!this.blacklistedEvents.has(event)) {
+        this.metrics.totalSendEvents.inc();
+        this.metrics.totalSendBytes.inc(dataToBytes(args));
+      }
       return orginalEmit.apply(socket, [event, ...args]);
     };
   }
 
-  collectTotalReceivedMessages(socket: Socket) {
-    socket.onAny((...args: any[]) => {
-      const [message] = args;
+  collectTotalReceivedMessages(socket: any) {
+    const org_onevent = socket.onevent;
+    socket.onevent = (packet: any) => {
+      if (packet && packet.data) {
+        const [event, data] = packet.data;
 
-      this.metrics.totalReceivedEvents.inc();
-      this.metrics.totalReceivedBytes.inc(dataToBytes(message));
-    });
+        if (!this.blacklistedEvents.has(event)) {
+          this.metrics.totalReceivedBytes.inc(dataToBytes(data));
+          this.metrics.totalReceivedEvents.inc();
+        }
+      }
+
+      return org_onevent.call(socket, packet);
+    };
   }
 
   collectResponseTime(socket: Socket) {
-    socket.on(PING, (cb) => {
-      // The callback (cb) is merely an ackowledgement. If you want to see the contents of the function call cb.toString() in a console
-      if (typeof cb === "function") cb();
-
-    });
+    // The server automatically sends heartbeat requests, the client will then send the ping result back to the server for metrics.
     socket.on(LATENCY_RESULT, (latency: number) => {
-      this.metrics.latency.labels("SocketIO Server").observe(latency)
+      this.metrics.latency.labels("SocketIO Server").observe(latency);
     });
   }
 
