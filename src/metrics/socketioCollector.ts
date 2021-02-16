@@ -79,9 +79,10 @@ export default class SocketIoCollector {
     socket.on(PING, (cb) => {
       // The callback (cb) is merely an ackowledgement. If you want to see the contents of the function call cb.toString() in a console
       if (typeof cb === "function") cb();
+
     });
     socket.on(LATENCY_RESULT, (latency: number) => {
-      this.metrics.latency.observe(latency);
+      this.metrics.latency.labels("SocketIO Server").observe(latency)
     });
   }
 

@@ -33,6 +33,9 @@ export default class PrometheusMetrics {
 
   latency = new Histogram({
     name: "socket_io_latency",
-    help: "Latency"
+    help: "Latency",
+    labelNames: ["Instance"]
   })
+
+  // TODO: Calculate some sort of error rate
 }
