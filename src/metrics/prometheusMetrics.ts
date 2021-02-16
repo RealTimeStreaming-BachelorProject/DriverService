@@ -1,23 +1,23 @@
-import { Counter, Gauge, Histogram } from "prom-client";
+import { Counter, Gauge } from "prom-client";
 
 export default class PrometheusMetrics {
-  concurrentDriverConnections = new Gauge({
-    name: "socket_io_concurrent_driver_connections",
+  concurrentConnections = new Gauge({
+    name: "socket_io_concurrent_connections",
     help: "Drivers",
   });
 
-  concurrentUserConnections = new Gauge({
-    name: "socket_io_concurrent_user_connections",
-    help: "Users",
+  totalDisconnects = new Counter({
+    name: "socket_io_total_disconnects",
+    help: "Drivers",
   });
 
-  totalSendEvents = new Counter({
-    name: "socket_io_total_sents_events",
+  totalTransmittedEvents = new Counter({
+    name: "socket_io_total_transmitted_events",
     help: "The total number of events sent from the server",
   });
 
-  totalSendBytes = new Counter({
-    name: "socket_io_total_sents_bytes",
+  totalTransmittedBytes = new Counter({
+    name: "socket_io_total_transmitted_bytes",
     help: "The total number of bytes sents from the server",
   });
 
@@ -31,11 +31,8 @@ export default class PrometheusMetrics {
     help: "The total number of bytes received from connected clients",
   });
 
-  latency = new Histogram({
-    name: "socket_io_latency",
-    help: "Latency",
-    labelNames: ["Instance"]
-  })
-
-  // TODO: Calculate some sort of error rate
+  totalErrors = new Counter({
+    name: "socket_io_total_errors",
+    help: "The total number of errors thrown on the server",
+  });
 }

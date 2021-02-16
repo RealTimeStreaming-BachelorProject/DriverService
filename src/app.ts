@@ -5,8 +5,8 @@ import * as RedisNotifier from "./persistence/redisNotifier";
 import { getHealthCheck } from "./util/healthCheck";
 import logger from "./util/logger";
 import { createServer } from "http";
-import socketIoMetricsCollector from "./metrics/socketioCollector";
 import { listenForShutdownSignals } from "./helpers/shutdown";
+import socketIoMetricsCollector from "./metrics/socketioCollector";
 
 /* IO Server */
 const ioServer = createServer();
@@ -15,7 +15,6 @@ const io = require("socket.io")(ioServer, {
     origin: "*",
     methods: ["GET", "PUT"],
   },
-  pingInterval: 5000 // for metrics
 });
 
 const SOCKETIO_PORT = process.env["SOCKETIO_PORT"] ?? 5002;
