@@ -1,4 +1,5 @@
-import { RedisClient } from "redis";
+import { Redis as RedisClient } from "ioredis";
+import logger from "../util/logger";
 import { createRedisClient, RedisDB } from ".";
 
 export interface Subscriber {
@@ -13,22 +14,20 @@ export interface Subscribers {
 const subscribers: Subscribers = {};
 
 export const startListening = () => {
-  const readClient: RedisClient = createRedisClient(RedisDB.Coordinates);
   const subClient: RedisClient = createRedisClient(RedisDB.Coordinates);
 
-  subClient.config("set", "notify-keyspace-events", "KEA");
-  subClient.subscribe("__keyevent@0__:set");
-  subClient.on("message", (_, key) => {
-    readClient.get(key, (error, value) => {
-      if (error) {
-        // Handle read error
-      }
-      notifySubscribers(key, value);
-    });
+  // patternsubscribe (all events)
+  subClient.psubscribe("*", (error, _) => {
+    if (error !== null)
+      logger.error(error);
+  });
+  subClient.on("pmessage", (_, channel, message) => {
+    notifySubscribers(channel, message);
   });
 };
 
 const notifySubscribers = (key: string, value: any) => {
+  console.log(value)
   const relevantSubscribers = subscribers[key];
   if (!relevantSubscribers) return;
   relevantSubscribers.forEach((sub) => {

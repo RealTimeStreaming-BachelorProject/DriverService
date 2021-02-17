@@ -1,16 +1,14 @@
 import { ICoordinateData } from "../../../interfaces/driver.interfaces";
 import { createRedisClient, RedisDB } from "../../../persistence";
-import { promisify } from "util";
-
 
 const redisCoordinateClient = createRedisClient(RedisDB.Coordinates);
 const redisPackagesClient = createRedisClient(RedisDB.Packages);
-const getPackageAsync = promisify(redisPackagesClient.get).bind(redisPackagesClient);
 
 export const saveCoordinates = (coordinateData: ICoordinateData) => {
   const { coordinate, driverID } = coordinateData;
   const key = `driver-${driverID}`;
   redisCoordinateClient.set(key, JSON.stringify(coordinate));
+  redisCoordinateClient.publish(key, JSON.stringify(coordinate));
 };
 
 export const associatePackagesToDriver = (
@@ -28,7 +26,7 @@ export const associatePackagesToDriver = (
 };
 
 export const retrieveDriverID = async (packageID: string) => {
-  return await getPackageAsync(packageID);
+  return await redisPackagesClient.get(packageID)
 };
 
 export const removePackage = async (packageID: string) => {
