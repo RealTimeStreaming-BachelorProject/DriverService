@@ -2,6 +2,7 @@ import { Server as ioServer, Socket } from "socket.io";
 import { dataToBytes } from "../helpers/metrichelpers";
 import PrometheusMetrics from "./prometheusMetrics";
 import { collectDefaultMetrics, register } from "prom-client";
+import { DRIVER_NAMESPACE, USER_NAMESPACE } from "../routes";
 
 export default class SocketIoCollector {
   io: ioServer;
@@ -35,18 +36,23 @@ export default class SocketIoCollector {
     };
   }
 
-  collectSocketMetrics(): void {
+  namespaces: string[] = [DRIVER_NAMESPACE, USER_NAMESPACE];
+
+  collectSocketMetrics() {
+    for (const namespace of this.namespaces) {
+      this.io.of(namespace).on("connection", (socket: Socket) => {
+        this.collectConcurrentConnections(socket);
+        this.collectTotalSendMessagesFromSocket(socket);
+        this.collectTotalReceivedMessages(socket);
+      });
+    }
     // For every connection to the server collecting the following metrics from the connection
-    this.io.on("connection", (socket: Socket) => {
-      this.collectConcurrentConnections(socket);
-      this.collectTotalSendMessagesFromSocket(socket);
-      this.collectTotalReceivedMessages(socket);
-    });
   }
 
   collectConcurrentConnections(socket: Socket) {
     socket.on("disconnect", () => {
       this.metrics.concurrentConnections.dec();
+      this.metrics.totalDisconnects.inc();
     });
     this.metrics.concurrentConnections.inc();
   }
@@ -67,12 +73,13 @@ export default class SocketIoCollector {
     socket.onevent = (packet: any) => {
       if (packet && packet.data) {
         const [event, data] = packet.data;
-        
-        if (event === 'error') {
-          this.metrics.concurrentConnections.set((this.io.engine as any).clientsCount);
+
+        if (event === "error") {
+          this.metrics.concurrentConnections.set(
+            (this.io.engine as any).clientsCount
+          );
           this.metrics.totalErrors.inc();
-        }
-        else if (!this.blacklistedEvents.has(event)) {
+        } else if (!this.blacklistedEvents.has(event)) {
           this.metrics.totalReceivedBytes.inc(dataToBytes(data));
           this.metrics.totalReceivedEvents.inc();
         }
