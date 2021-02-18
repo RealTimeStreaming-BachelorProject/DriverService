@@ -1,10 +1,11 @@
 import fetch from "node-fetch";
 import { EXPRESS_PORT } from "../app";
 /**
- * This files contains helper methods that talks to the coordinator service.
+ * This file contains helpersfor talking to the coordinator service.
  */
 
 export const registerDriverService = async () => {
+  if (process.env["USE_COORDINATOR"] === "FALSE") return;
   const endpoint = process.env["COORDINATOR_URL"] + "/register";
   return new Promise<void>(async (resolve) => {
     try {
@@ -17,7 +18,6 @@ export const registerDriverService = async () => {
           port: EXPRESS_PORT,
         }),
       });
-      console.log("Done")
       resolve();
     } catch (error) {
       console.log(`👮🏻‍♂️🚫 Coordinator Service was not found. Exiting...`);

@@ -78,6 +78,7 @@ services:
       SOCKETIO_PORT: 5002
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      USE_COORDINATOR: "FALSE"
     ports:
       - 5001:5001
       - 5002:5002
