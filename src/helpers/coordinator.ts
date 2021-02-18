@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import { EXPRESS_PORT } from "../app";
 /**
- * This files contains helper methods that talks to the coordinator service.
+ * This file contains helpersfor talking to the coordinator service.
  */
 
 export const registerDriverService = async () => {
