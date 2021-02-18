@@ -5,6 +5,7 @@ import { EXPRESS_PORT } from "../app";
  */
 
 export const registerDriverService = async () => {
+  if (process.env["USE_COORDINATOR"] === "FALSE") return;
   const endpoint = process.env["COORDINATOR_URL"] + "/register";
   return new Promise<void>(async (resolve) => {
     try {
