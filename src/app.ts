@@ -7,14 +7,14 @@ import logger from "./util/logger";
 import { createServer } from "http";
 import { listenForShutdownSignals } from "./helpers/shutdown";
 import socketIoMetricsCollector from "./metrics/socketioCollector";
-import { registerDriverService } from "./helpers/coordinator";
+// import { registerDriverService } from "./helpers/coordinator";
 require("dotenv").config();
 
 export const EXPRESS_PORT = process.env["EXPRESS_PORT"] ?? 5001;
 export const SOCKETIO_PORT = process.env["SOCKETIO_PORT"] ?? 5002;
 
 const init = async () => {
-  await registerDriverService(); // Wait to check if Coordinator is responding
+  // await registerDriverService(); // Wait to check if Coordinator is responding
   setupServer();
 } 
 

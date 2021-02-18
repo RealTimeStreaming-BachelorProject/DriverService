@@ -27,7 +27,6 @@ export const startListening = () => {
 };
 
 const notifySubscribers = (key: string, value: any) => {
-  console.log(value)
   const relevantSubscribers = subscribers[key];
   if (!relevantSubscribers) return;
   relevantSubscribers.forEach((sub) => {

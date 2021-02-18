@@ -23,6 +23,7 @@ export const setupCoordinateListener = (clientSocket: Socket) => {
 
 function newCoordinates(clientSocket: Socket) {
   clientSocket.on(NEW_COORDINATES, (coordinateData: ICoordinateData) => {
+    console.log(coordinateData)
     const driverID = findDriverID(clientSocket.id);
 
     coordinateData.driverID = driverID;
