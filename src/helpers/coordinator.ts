@@ -17,7 +17,6 @@ export const registerDriverService = async () => {
           port: EXPRESS_PORT,
         }),
       });
-      console.log("Done")
       resolve();
     } catch (error) {
       console.log(`👮🏻‍♂️🚫 Coordinator Service was not found. Exiting...`);
