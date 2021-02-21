@@ -3,7 +3,7 @@ scrape_configs:
   - job_name: "prometheus"
     scrape_interval: 1s
     static_configs:
-      - targets: ["driverservice:5001"]
+      - targets: ["host.docker.internal:5001"]
         labels:
           service: "test-prom"
           group: "production"
