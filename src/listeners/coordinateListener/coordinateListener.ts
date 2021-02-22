@@ -13,7 +13,7 @@ import {
   associatePackagesToDriver,
   removePackage,
   saveCoordinates,
-} from "./util/redis";
+} from "../../helpers/redis";
 
 export const setupCoordinateListener = (clientSocket: Socket) => {
   newCoordinates(clientSocket);
@@ -23,7 +23,6 @@ export const setupCoordinateListener = (clientSocket: Socket) => {
 
 function newCoordinates(clientSocket: Socket) {
   clientSocket.on(NEW_COORDINATES, (coordinateData: ICoordinateData) => {
-    console.log(coordinateData)
     const driverID = findDriverID(clientSocket.id);
 
     coordinateData.driverID = driverID;
@@ -37,6 +36,7 @@ function deliveryStart(clientSocket: Socket) {
     associatePackagesToDriver(deliveryStartData.packages, driverID);
   });
 }
+
 // This event will trigger when the deliveryman delivers a package
 function packageDelivered(clientSocket: Socket) {
   clientSocket.on(PACKAGE_DELIVERED, (packageId: string) => {

@@ -28,7 +28,7 @@ const setupServer = () => {
     },
   });
 
-  RedisNotifier.startListening();
+  RedisNotifier.coordinateListening();
   configureIOServer(io);
 
   const socketIoCollector = new socketIoMetricsCollector(io, true);

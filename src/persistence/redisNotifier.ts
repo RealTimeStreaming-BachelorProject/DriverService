@@ -1,6 +1,6 @@
 import { Redis as RedisClient } from "ioredis";
 import logger from "../util/logger";
-import { createRedisClient, RedisDB } from ".";
+import { cluster, RedisDB } from "./index";
 
 export interface Subscriber {
   userId: string;
@@ -13,16 +13,16 @@ export interface Subscribers {
 
 const subscribers: Subscribers = {};
 
-export const startListening = () => {
-  const subClient: RedisClient = createRedisClient(RedisDB.Coordinates);
-
+export const coordinateListening = () => {
   // patternsubscribe (all events)
-  subClient.psubscribe("*", (error, _) => {
-    if (error !== null)
-      logger.error(error);
+  cluster.psubscribe("driver-*", (error, _) => {
+    if (error !== null) logger.error(error);
   });
-  subClient.on("pmessage", (_, channel, message) => {
-    notifySubscribers(channel, message);
+  // When clients publishes messages
+  cluster.on("pmessage", (pattern, channel, message) => {
+    if (pattern.startsWith("driver-")) {
+      notifySubscribers(channel, message);
+    }
   });
 };
 
