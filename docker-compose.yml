@@ -67,7 +67,9 @@ services:
       - "REDIS_CLUSTER_CREATOR=yes"
 
   driverservice:
-    image: omvk97/driverservicedev
+    build:
+      context: ./
+      dockerfile: dockerfile.dev
     container_name: driverservice
     environment:
       EXPRESS_PORT: 5001
