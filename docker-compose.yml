@@ -96,11 +96,6 @@ services:
     ports:
       - 3000:3000
 
-networks:
-  default:
-    external:
-      name: "dev-network"
-
 volumes:
   redis-cluster_data-0:
     driver: local
