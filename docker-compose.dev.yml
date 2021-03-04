@@ -1,0 +1,74 @@
+version: "3"
+
+services:
+  redis-node-0:
+    image: docker.io/bitnami/redis-cluster:6.0-debian-10
+    volumes:
+      - redis-cluster_data-0:/bitnami/redis/data
+    environment:
+      - "REDIS_PASSWORD=bitnami"
+      - "REDIS_NODES=redis-node-0 redis-node-1 redis-node-2"
+
+  redis-node-1:
+    image: docker.io/bitnami/redis-cluster:6.0-debian-10
+    volumes:
+      - redis-cluster_data-1:/bitnami/redis/data
+    environment:
+      - "REDIS_PASSWORD=bitnami"
+      - "REDIS_NODES=redis-node-0 redis-node-1 redis-node-2"
+
+  redis-node-2:
+    image: docker.io/bitnami/redis-cluster:6.0-debian-10
+    volumes:
+      - redis-cluster_data-2:/bitnami/redis/data
+    environment:
+      - "REDIS_PASSWORD=bitnami"
+      - "REDIS_NODES=redis-node-0 redis-node-1 redis-node-2"
+    ports:
+      - 6381:6379
+
+  redis-cluster-init:
+    image: docker.io/bitnami/redis-cluster:6.0-debian-10
+    depends_on:
+      - redis-node-0
+      - redis-node-1
+      - redis-node-2
+    environment:
+      - "REDISCLI_AUTH=bitnami"
+      - "REDIS_CLUSTER_REPLICAS=1"
+      - "REDIS_NODES=redis-node-0 redis-node-1 redis-node-2"
+      - "REDIS_CLUSTER_CREATOR=yes"
+
+  driverservice:
+    build:
+      context: ./
+      dockerfile: dockerfile.dev
+    container_name: driverservice
+    env_file:
+      - .env.dev
+    ports:
+      - 5001:5001
+      - 5002:5002
+    volumes:
+      - ./src:/opt/app/src/ # for dev purposes
+    depends_on:
+      - redis-cluster-init
+  performance_monitoring:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+
+volumes:
+  redis-cluster_data-0:
+    driver: local
+  redis-cluster_data-1:
+    driver: local
+  redis-cluster_data-2:
+    driver: local
