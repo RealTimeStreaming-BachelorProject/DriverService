@@ -46,11 +46,11 @@ const setupServer = () => {
   });
 
   ioServer.listen(SOCKETIO_PORT, () => {
-    logger.info("🚀 Socket IO server started");
+    logger.info(`🚀 Socket IO server started at port ${SOCKETIO_PORT}`);
   });
 
   const expressServer = app.listen(EXPRESS_PORT, () => {
-    logger.info("🚀 Express server started");
+    logger.info(`🚀 Express server started at port ${EXPRESS_PORT}`);
   });
 
   listenForShutdownSignals(io, expressServer);

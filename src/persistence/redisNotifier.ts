@@ -1,6 +1,5 @@
-import { Redis as RedisClient } from "ioredis";
 import logger from "../util/logger";
-import { cluster, RedisDB } from "./index";
+import { cluster } from "./index";
 
 export interface Subscriber {
   userId: string;

@@ -1,4 +1,3 @@
-import { Redis as RedisClient, Cluster } from "ioredis";
 import Redis from "ioredis";
 import logger from "../util/logger";
 
@@ -45,8 +44,3 @@ export const cluster = new Redis.Cluster(redisNodes, {
 cluster.on("error", function (error) {
   logger.error(error);
 });
-
-export enum RedisDB {
-  Coordinates = 0,
-  Packages = 1,
-}

@@ -67,7 +67,9 @@ services:
       - "REDIS_CLUSTER_CREATOR=yes"
 
   driverservice:
-    image: omvk97/driverservicedev
+    build:
+      context: ./
+      dockerfile: dockerfile.dev
     container_name: driverservice
     environment:
       EXPRESS_PORT: 5001
@@ -77,6 +79,7 @@ services:
         { "port": 6379, "host": "redis-node-2" }, { "port": 6379, "host": "redis-node-3" },
         { "port": 6379, "host": "redis-node-4" }, { "port": 6379, "host": "redis-node-5" }]'
       USE_COORDINATOR: "FALSE"
+      JWT_KEY: developmentjwtkey
     ports:
       - 5001:5001
       - 5002:5002
@@ -95,11 +98,6 @@ services:
     image: grafana/grafana
     ports:
       - 3000:3000
-
-networks:
-  default:
-    external:
-      name: "dev-network"
 
 volumes:
   redis-cluster_data-0:
