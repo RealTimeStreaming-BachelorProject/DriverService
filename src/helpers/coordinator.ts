@@ -20,7 +20,8 @@ export const registerLoadBalancer = async () => {
         });
         resolve();
       } catch (error) {
-        console.log(`👮🏻‍♂️🚫 Loadbalancer Service was not found. Exiting...`);
+        console.log(error.message)
+        console.log(`👮🏻‍♂️🚫 Loadbalancer Service was not found!.`);
         // process.exit(0);
       }
     });
