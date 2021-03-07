@@ -5,7 +5,7 @@ services:
     image: omvk97/driverservice
     container_name: driverservice
     env_file:
-      - /opt/app/.env
+      - .env
     ports:
       - 5001:5001
       - 5002:5002
