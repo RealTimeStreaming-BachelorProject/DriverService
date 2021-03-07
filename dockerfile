@@ -22,6 +22,8 @@ WORKDIR /opt/app
 
 COPY --from=builder /opt/app/ ./
 
+COPY .env ./
+
 ENV NODE_ENV production
 
 CMD [ "node", "dist/app.js" ]
