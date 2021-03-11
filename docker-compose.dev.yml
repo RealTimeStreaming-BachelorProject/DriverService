@@ -53,17 +53,17 @@ services:
       - ./src:/opt/app/src/ # for dev purposes
     depends_on:
       - redis-cluster-init
-  performance_monitoring:
-    image: prom/prometheus
-    container_name: prometheus
-    ports:
-      - 9090:9090
-    volumes:
-      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
-  grafana:
-    image: grafana/grafana
-    ports:
-      - 3000:3000
+  # performance_monitoring:
+  #   image: prom/prometheus
+  #   container_name: prometheus
+  #   ports:
+  #     - 9090:9090
+  #   volumes:
+  #     - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+  # grafana:
+  #   image: grafana/grafana
+  #   ports:
+  #     - 3000:3000
 
 volumes:
   redis-cluster_data-0:
@@ -72,3 +72,8 @@ volumes:
     driver: local
   redis-cluster_data-2:
     driver: local
+
+networks:
+  default:
+    external:
+      name: bachelor-local
