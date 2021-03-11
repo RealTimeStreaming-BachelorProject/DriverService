@@ -14,7 +14,7 @@ export const EXPRESS_PORT = process.env["EXPRESS_PORT"] ?? 5001;
 export const SOCKETIO_PORT = process.env["SOCKETIO_PORT"] ?? 5002;
 
 const init = async () => {
-  registerLoadBalancer()
+  // registerLoadBalancer()
   // await registerDriverService(); // Wait to check if Coordinator is responding
   setupServer();
 } 
