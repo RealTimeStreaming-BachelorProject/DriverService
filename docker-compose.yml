@@ -7,26 +7,30 @@ services:
     env_file:
       - .env
     ports:
-      - 5001:5001
-      - 5002:5002
+      - 5020:5001
+      - 5021:5002
+    depends_on:
+      - redis-cluster-init
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 500M
-  
+
   driverservice1:
     image: omvk97/driverservice
     container_name: driverservice1
     env_file:
       - .env
     ports:
-      - 5003:5001
-      - 5004:5002
+      - 5023:5001
+      - 5024:5002
+    depends_on:
+      - redis-cluster-init
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 500M
 
   driverservice2:
@@ -35,14 +39,62 @@ services:
     env_file:
       - .env
     ports:
-      - 5005:5001
-      - 5006:5002
+      - 5025:5001
+      - 5026:5002
+    depends_on:
+      - redis-cluster-init
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 500M
-  
+
+  redis-node-0:
+    image: docker.io/bitnami/redis-cluster:6.0-debian-10
+    volumes:
+      - redis-cluster_data-0:/bitnami/redis/data
+    environment:
+      - "REDIS_PASSWORD=bitnami"
+      - "REDIS_NODES=redis-node-0 redis-node-1 redis-node-2"
+
+  redis-node-1:
+    image: docker.io/bitnami/redis-cluster:6.0-debian-10
+    volumes:
+      - redis-cluster_data-1:/bitnami/redis/data
+    environment:
+      - "REDIS_PASSWORD=bitnami"
+      - "REDIS_NODES=redis-node-0 redis-node-1 redis-node-2"
+
+  redis-node-2:
+    image: docker.io/bitnami/redis-cluster:6.0-debian-10
+    volumes:
+      - redis-cluster_data-2:/bitnami/redis/data
+    environment:
+      - "REDIS_PASSWORD=bitnami"
+      - "REDIS_NODES=redis-node-0 redis-node-1 redis-node-2"
+    ports:
+      - 6381:6379
+
+  redis-cluster-init:
+    image: docker.io/bitnami/redis-cluster:6.0-debian-10
+    depends_on:
+      - redis-node-0
+      - redis-node-1
+      - redis-node-2
+    environment:
+      - "REDISCLI_AUTH=bitnami"
+      - "REDIS_CLUSTER_REPLICAS=1"
+      - "REDIS_NODES=redis-node-0 redis-node-1 redis-node-2"
+      - "REDIS_CLUSTER_CREATOR=yes"
+
+volumes:
+  redis-cluster_data-0:
+    driver: local
+  redis-cluster_data-1:
+    driver: local
+  redis-cluster_data-2:
+    driver: local
+
   # performance_monitoring:
   #   image: prom/prometheus
   #   container_name: prometheus
