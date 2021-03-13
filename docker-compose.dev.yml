@@ -1,34 +1,10 @@
-version: "3"
+version: "3.8"
 
 services:
-  redis-node-0:
-    image: docker.io/bitnami/redis-cluster:6.0-debian-10
-    container_name: redisnode0
+  redis:
+    image: bitnami/redis
+    container_name: redis
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
     ports:
       - "6379:6379"
-    environment:
-      - "ALLOW_EMPTY_PASSWORD=yes"
-      - "REDIS_NODES=redis-node-0 redis-node-1"
-      - "REDIS_CLUSTER_ANNOUNCE_IP=localhost"
-
-  redis-node-1:
-    image: docker.io/bitnami/redis-cluster:6.0-debian-10
-    container_name: redisnode1
-    ports:
-      - "6380:6379"
-    environment:
-      - "ALLOW_EMPTY_PASSWORD=yes"
-      - "REDIS_NODES=redis-node-0 redis-node-1"
-      - "REDIS_CLUSTER_ANNOUNCE_IP=localhost"
-
-  redis-cluster-init:
-    image: docker.io/bitnami/redis-cluster:6.0-debian-10
-    container_name: redisnodeinit
-    depends_on:
-      - redis-node-0
-      - redis-node-1
-    environment:
-      - "ALLOW_EMPTY_PASSWORD=yes"
-      - "REDIS_CLUSTER_REPLICAS=0"
-      - "REDIS_NODES=redis-node-0 redis-node-1"
-      - "REDIS_CLUSTER_CREATOR=yes"
