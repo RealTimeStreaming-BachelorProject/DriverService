@@ -7,8 +7,8 @@ services:
     env_file:
       - .env
     ports:
-      - 5020:5001
-      - 5021:5002
+      - 5021:5001
+      - 5022:5002
     depends_on:
       - redis
     deploy:
@@ -23,8 +23,8 @@ services:
     env_file:
       - .env
     ports:
-      - 5022:5001
-      - 5023:5002
+      - 5023:5001
+      - 5024:5002
     depends_on:
       - redis
     deploy:
@@ -39,8 +39,8 @@ services:
     env_file:
       - .env
     ports:
-      - 5024:5001
-      - 5025:5002
+      - 5025:5001
+      - 5026:5002
     depends_on:
       - redis
     deploy:
