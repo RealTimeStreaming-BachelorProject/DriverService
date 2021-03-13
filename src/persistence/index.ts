@@ -4,6 +4,7 @@ import logger from "../helpers/logger";
 let redisNodes: any;
 
 if (process.env.REDIS_CLUSTER_NODES) {
+  console.log("What")
   redisNodes = JSON.parse(process.env.REDIS_CLUSTER_NODES);
 } else {
   redisNodes = [
@@ -33,7 +34,7 @@ if (process.env.REDIS_CLUSTER_NODES) {
     },
   ];
 }
-
+console.log(redisNodes)
 export const cluster = new Redis.Cluster(redisNodes, {
   scaleReads: "slave", // sending write queries to master and read queries to slave
   redisOptions: {
