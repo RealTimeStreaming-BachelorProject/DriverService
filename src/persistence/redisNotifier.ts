@@ -1,5 +1,5 @@
 import logger from "../helpers/logger";
-import { cluster } from "./index";
+import { redis_sub } from "./index";
 
 export interface Subscriber {
   userId: string;
@@ -14,11 +14,11 @@ const subscribers: Subscribers = {};
 
 export const coordinateListening = () => {
   // patternsubscribe (all events)
-  cluster.psubscribe("driver-*", (error, _) => {
+  redis_sub.psubscribe("driver-*", (error, _) => {
     if (error !== null) logger.error(error);
   });
   // When clients publishes messages
-  cluster.on("pmessage", (pattern, channel, message) => {
+  redis_sub.on("pmessage", (pattern, channel, message) => {
     if (pattern.startsWith("driver-")) {
       notifySubscribers(channel, message);
     }

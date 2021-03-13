@@ -1,28 +1,23 @@
 import Redis from "ioredis";
 import logger from "../helpers/logger";
+require("dotenv").config();
 
-let redisNodes: any;
+let PORT: any;
+let HOST: any;
 
-if (process.env.REDIS_CLUSTER_NODES) {
-  redisNodes = JSON.parse(process.env.REDIS_CLUSTER_NODES);
+if (process.env.REDIS_HOST && process.env.REDIS_PORT) {
+  PORT = process.env.REDIS_PORT;
+  HOST = process.env.REDIS_HOST;
 } else {
-  redisNodes = [
-    {
-      port: 6379,
-      host: "127.0.0.1",
-    },
-    {
-      port: 6380,
-      host: "127.0.0.1",
-    },
-  ];
+  console.log("No Redis defined in environment variables. Shutting down ...");
+  process.exit(0);
 }
 
-console.log(redisNodes)
-export const cluster = new Redis.Cluster(redisNodes, {
-  scaleReads: "slave", // sending write queries to master and read queries to slave
-});
+export const redis_sub = new Redis(PORT, HOST);
+export const redis_pub = new Redis(PORT, HOST);
 
-cluster.on("error", function (error) {
-  logger.error(error);
+[redis_sub, redis_pub].forEach((redis) => {
+  redis.on("error", function (error) {
+    logger.error(error);
+  });
 });
