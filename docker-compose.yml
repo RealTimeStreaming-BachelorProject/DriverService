@@ -56,6 +56,11 @@ services:
     environment:
       - "REDIS_PASSWORD=bitnami"
       - "REDIS_NODES=redis-node-0 redis-node-1 redis-node-2"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 500M
 
   redis-node-1:
     image: docker.io/bitnami/redis-cluster:6.0-debian-10
@@ -64,6 +69,11 @@ services:
     environment:
       - "REDIS_PASSWORD=bitnami"
       - "REDIS_NODES=redis-node-0 redis-node-1 redis-node-2"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 500M
 
   redis-node-2:
     image: docker.io/bitnami/redis-cluster:6.0-debian-10
@@ -74,6 +84,11 @@ services:
       - "REDIS_NODES=redis-node-0 redis-node-1 redis-node-2"
     ports:
       - 6381:6379
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 500M
 
   redis-cluster-init:
     image: docker.io/bitnami/redis-cluster:6.0-debian-10
