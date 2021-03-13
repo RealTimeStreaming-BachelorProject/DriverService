@@ -2,7 +2,7 @@ import { Server as ioServer, Socket } from "socket.io";
 import { dataToBytes } from "../helpers/metrichelpers";
 import PrometheusMetrics from "./prometheusMetrics";
 import { collectDefaultMetrics, register } from "prom-client";
-import { DRIVER_NAMESPACE, USER_NAMESPACE } from "../routes";
+import { DRIVER_NAMESPACE, USER_NAMESPACE } from "../constants/routes";
 
 export default class SocketIoCollector {
   io: ioServer;

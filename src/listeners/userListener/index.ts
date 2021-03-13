@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { LATEST_COORDINATES, SUBSCRIBE_TO_DRIVER } from "../../events";
+import { LATEST_COORDINATES, SUBSCRIBE_TO_DRIVER } from "../../constants/events";
 import { addSubscriber, removeSubscriber } from "../../persistence/redisNotifier";
 
 export const setupUserListeners = (clientSocket: Socket) => {

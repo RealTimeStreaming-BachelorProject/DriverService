@@ -1,5 +1,5 @@
 import Redis from "ioredis";
-import logger from "../util/logger";
+import logger from "../helpers/logger";
 
 let redisNodes: any;
 

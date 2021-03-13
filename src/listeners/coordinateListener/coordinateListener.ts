@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { NEW_COORDINATES } from "../../events";
+import { NEW_COORDINATES } from "../../constants/events";
 import { findDriverID } from "../../helpers/jwt.helpers";
 import { ICoordinateData } from "../../interfaces/driver.interfaces";
 import { saveCoordinates } from "../../helpers/redis";

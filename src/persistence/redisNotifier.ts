@@ -1,4 +1,4 @@
-import logger from "../util/logger";
+import logger from "../helpers/logger";
 import { cluster } from "./index";
 
 export interface Subscriber {

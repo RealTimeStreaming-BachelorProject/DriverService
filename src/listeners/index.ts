@@ -1,12 +1,12 @@
 import { Server, Socket } from "socket.io";
-import logger from "../util/logger";
+import logger from "../helpers/logger";
 import connections from "../helpers/connections";
 import { jwtDecoded } from "../helpers/jwt.helpers";
 import { IDecodedJWT } from "../interfaces/authentication.interfaces";
-import { DRIVER_NAMESPACE, USER_NAMESPACE } from "../routes";
+import { DRIVER_NAMESPACE, USER_NAMESPACE } from "../constants/routes";
 import { driverListeners, userListeners } from "./listeners";
 import { authorize } from "socketio-jwt";
-import { AUTHENTICATED } from "../events";
+import { AUTHENTICATED } from "../constants/events";
 const JWT_KEY: string = process.env["JWT_KEY"] ?? "developmentjwtkey";
 
 export const configureIOServer = (io: Server) => {
