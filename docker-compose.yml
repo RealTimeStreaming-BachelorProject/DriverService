@@ -3,7 +3,7 @@ version: "3"
 services:
   driverservice0:
     image: omvk97/driverservice
-    container_name: driverservice
+    container_name: driverservice0
     env_file:
       - .env
     ports:
@@ -19,7 +19,7 @@ services:
 
   driverservice1:
     image: omvk97/driverservice
-    container_name: driverservice
+    container_name: driverservice1
     env_file:
       - .env
     ports:
@@ -35,7 +35,7 @@ services:
 
   driverservice2:
     image: omvk97/driverservice
-    container_name: driverservice
+    container_name: driverservice2
     env_file:
       - .env
     ports:
