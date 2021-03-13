@@ -1,9 +1,9 @@
 import { ICoordinateData } from "../interfaces/driver.interfaces";
-import { pub, redis } from "../persistence";
+import { redis_pub, redis_sub } from "../persistence";
 
 export const saveCoordinates = (coordinateData: ICoordinateData) => {
   const { coordinate, driverID } = coordinateData;
   const key = `driver-${driverID}`;
-  pub.set(key, JSON.stringify(coordinate));
-  pub.publish(key, JSON.stringify(coordinate));
+  redis_pub.set(key, JSON.stringify(coordinate));
+  redis_pub.publish(key, JSON.stringify(coordinate));
 };
