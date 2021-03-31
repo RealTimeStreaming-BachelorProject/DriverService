@@ -51,7 +51,7 @@ services:
 
   driverservice3:
     image: omvk97/driverservice
-    container_name: driverservice0
+    container_name: driverservice3
     env_file:
       - .env
     ports:
@@ -67,7 +67,7 @@ services:
 
   driverservice4:
     image: omvk97/driverservice
-    container_name: driverservice1
+    container_name: driverservice4
     env_file:
       - .env
     ports:
@@ -81,9 +81,9 @@ services:
           cpus: "0.5"
           memory: 500M
 
-  driverservice6:
+  driverservice5:
     image: omvk97/driverservice
-    container_name: driverservice2
+    container_name: driverservice5
     env_file:
       - .env
     ports:
